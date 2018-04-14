@@ -155,6 +155,14 @@ register(
 )
 
 register(
+    id='FrozenLakeNoSlip-v0',
+    entry_point='gym.envs.toy_text:FrozenLakeEnv',
+    kwargs={'map_name' : '4x4', 'is_slippery': False},
+    max_episode_steps=100,
+    reward_threshold=0.78, # optimum = .8196
+)
+
+register(
     id='FrozenLake8x8-v0',
     entry_point='gym.envs.toy_text:FrozenLakeEnv',
     kwargs={'map_name' : '8x8'},
@@ -289,6 +297,14 @@ register(
     id='HumanoidStandup-v2',
     entry_point='gym.envs.mujoco:HumanoidStandupEnv',
     max_episode_steps=1000,
+)
+
+# GS
+# ----------------------------------------
+register(
+    id='TicTacToe-v0',
+    entry_point='gym.envs.toy_text:TicTacToeEnv',
+    max_episode_steps=100,
 )
 
 # Robotics

@@ -98,19 +98,34 @@ class FrozenLakeEnv(discrete.DiscreteEnv):
                         li.append((1.0, s, 0, True))
                     else:
                         if is_slippery:
-                            for b in [(a-1)%4, a, (a+1)%4]:
+                            for (b, p) in [((a-1)%4, 1.0/4.0),
+                                           (a, 1.0/2.0),
+                                           ((a+1)%4, 1.0/4.0)]:
                                 newrow, newcol = inc(row, col, b)
                                 newstate = to_s(newrow, newcol)
                                 newletter = desc[newrow, newcol]
                                 done = bytes(newletter) in b'GH'
-                                rew = float(newletter == b'G')
-                                li.append((1.0/3.0, newstate, rew, done))
+                                if newletter == b'G':
+                                    rew = 1.0
+                                elif newletter == b'H':
+                                    rew = -0.0
+                                else:
+                                    # GS: penalize long paths
+                                    rew = -0.00
+                                li.append((p, newstate, rew, done))
                         else:
                             newrow, newcol = inc(row, col, a)
                             newstate = to_s(newrow, newcol)
                             newletter = desc[newrow, newcol]
                             done = bytes(newletter) in b'GH'
                             rew = float(newletter == b'G')
+                            if newletter == b'G':
+                                rew = 1.0
+                            elif newletter == b'H':
+                                rew = -1.0
+                            else:
+                                # GS: penalize long paths
+                                rew = -0.00
                             li.append((1.0, newstate, rew, done))
 
         super(FrozenLakeEnv, self).__init__(nS, nA, P, isd)
