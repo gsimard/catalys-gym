@@ -48,6 +48,7 @@ class TicTacToeEnv(gym.Env):
 
         self.ai_strength = 0.0
         self.first_play = 1
+        self.self_play = False
         
         self.state = np.zeros(9, dtype=np.int8)
         self.reset()
@@ -97,15 +98,20 @@ class TicTacToeEnv(gym.Env):
             # The dictionary has been created with player X in
             # mind but here we play O, so inverse state first
             moves = TicTacToeEnv.tictactoe_dict[tuple(np.multiply(self.state, self.whose_turn()))]
-            self.state[random.choice(moves)] = self.whose_turn()
+            a = random.choice(moves)
+            self.state[a] = self.whose_turn()
+
+            return a
 
     def play_random(self):
         # Unless the game is over, play
         if not self.done():
             # Select a random available box from the grid
             si = set(np.arange(0,9)).symmetric_difference(set(np.flatnonzero(self.state)))
-            i = random.sample(si, 1)[0]
-            self.state[i] = self.whose_turn()
+            a = random.sample(si, 1)[0]
+            self.state[a] = self.whose_turn()
+
+            return a
     
     def step(self, action):
         #assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
@@ -127,11 +133,12 @@ class TicTacToeEnv(gym.Env):
             if self.state[action] == 0.0:
                 self.state[action] = 1.0
 
-                # O's turn
-                if np.random.rand(1) < self.ai_strength:
-                    self.play_perfect()
-                else:
-                    self.play_random()
+                # O's turn, if the agent is not playing against itself
+                if not self.self_play:
+                    if np.random.rand(1) < self.ai_strength:
+                        self.play_perfect()
+                    else:
+                        self.play_random()
                     
                 return np.array(self.state), self.reward(), self.done(), {}
 
