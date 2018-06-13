@@ -131,14 +131,14 @@ class TicTacToeEnv(gym.Env):
         else:
             # Accept a move only if box is available
             if self.state[action] == 0.0:
-                self.state[action] = 1.0
+                self.state[action] = self.whose_turn()
 
                 # O's turn, if the agent is not playing against itself
-                if not self.self_play:
-                    if np.random.rand(1) < self.ai_strength:
-                        self.play_perfect()
-                    else:
-                        self.play_random()
+                # if not self.self_play:
+                #     if np.random.rand(1) < self.ai_strength:
+                #         self.play_perfect()
+                #     else:
+                #         self.play_random()
                     
                 return np.array(self.state), self.reward(), self.done(), {}
 
@@ -149,13 +149,18 @@ class TicTacToeEnv(gym.Env):
     def reset(self):
         # Reset the grid
         self.state = np.zeros(9, dtype=np.int8)
-
+        self.first_play = 1
+        
         # Half the time, O will have the first move
         if np.random.rand(1) < 0.5:
             self.first_play = -1
             self.state[np.random.randint(0,9)] = -1
-        else:
-            self.first_play = 1
+        # Half the time X will be forced to play its first move
+        # randomly, with O answering the move randomly
+        # elif np.random.rand(1) < 0.5:
+        #     self.first_play = 1
+        #    self.state[np.random.randint(0,9)] = 1
+        #    self.play_perfect()
 
         return np.array(self.state)
 
